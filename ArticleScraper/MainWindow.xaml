@@ -1,8 +1,187 @@
 ﻿<Window x:Class="ArticleScraper.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
+        xmlns:toolkitLayout="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Layout.Toolkit"
+        xmlns:toolkitInput="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
+        Title="MainWindow" Height="500" Width="825" ResizeMode="CanMinimize" WindowStyle="None" AllowsTransparency="False" AllowDrop="True" BorderBrush="#0098c5" BorderThickness="3">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Light Theme -->
+                <!--<ResourceDictionary Source="Themes/Metro/Light/Metro.MSControls.Core.Implicit.xaml" />
+                <ResourceDictionary Source="Themes/Metro/Light/Metro.MSControls.Toolkit.Implicit.xaml" />-->
+
+                <!-- Dark Theme -->
+                <ResourceDictionary Source="/Themes/Metro/Dark/MetroDark.MSControls.Core.Implicit.xaml" />
+                <ResourceDictionary Source="/Themes/Metro/Dark/MetroDark.MSControls.Toolkit.Implicit.xaml" />
+
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Light Theme -->
+            <!--<SolidColorBrush x:Key="BackgroundKey" Color="#FFFFFF" />-->
+
+            <!-- Dark Theme -->
+            <SolidColorBrush x:Key="BackgroundKey" Color="#181818" />
+            <Style x:Key="MainLabelStyle" TargetType="Label">
+                <Setter Property="Foreground" Value="#767676" />
+                <Setter Property="FontSize" Value="13 "/>
+                <Setter Property="FontWeight" Value="Bold" />
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>    
+    <Grid Background="Black">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="35" />
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0" Name="dpHeader" MouseLeftButtonDown="dpHeader_MouseLeftButtonDown">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="500" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="38" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Label Grid.Column="0" Grid.Row="0" Margin="25,0,0,0" Foreground="Gray" VerticalContentAlignment="Center" FontSize="13" FontWeight="Bold">| Article Scraper</Label>
+                <Button Grid.Column="1" Grid.Row="0" VerticalContentAlignment="Center" FontSize="16" FontWeight="ExtraBold" Width="30" Height="30" HorizontalAlignment="Right" Margin="0,0,40,0" Name="btn_MinimizeInterface" Content="___" Click="btn_MinimizeInterface_Click" />
+                <Button Grid.Column="1" Grid.Row="0" VerticalContentAlignment="Center" FontSize="16" FontWeight="ExtraBold" Width="30" Height="30" HorizontalAlignment="Right" Margin="0,0,5,0" Name="btn_CloseInterface" Content="X" Click="btn_CloseInterface_Click" />
+            </Grid>
+        </DockPanel>
+        <DockPanel Grid.Row="1" Name="dpMainHolder">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <DockPanel Name="dpMainNavigation" Grid.Row="0" LastChildFill="False">
+                    <Label Margin="25,0,0,0" DockPanel.Dock="Left" Content="// Welcome" Name="lblWelcome" Style="{StaticResource MainLabelStyle}" Foreground="#0098c5" MouseLeftButtonUp="MainLabel_Click" />
+                    <Label DockPanel.Dock="Left" Content="// Scraping" Name="lblScraping" Style="{StaticResource MainLabelStyle}" MouseLeftButtonUp="MainLabel_Click" />
+                    <Label DockPanel.Dock="Right" Content="// Configure" Name="lblConfigure" Style="{StaticResource MainLabelStyle}" MouseLeftButtonUp="MainLabel_Click" />
+                </DockPanel>
+                <DockPanel Grid.Row="1" Name="dpWelcome">
+                    <TextBox Name="tbRules" IsReadOnly="True" Margin="5" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+                </DockPanel>
+                <DockPanel Grid.Row="1" Name="dpScraping" Visibility="Hidden">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="40" />
+                        </Grid.RowDefinitions>
+                        <TextBox Grid.Row="0" IsReadOnly="True" VerticalScrollBarVisibility="Auto" Name="tbLogs" Margin="5,0,5,0" />
+                        <DockPanel Grid.Row="1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="250" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                                    <Button Grid.Column="0" Name="btnControl" Content="Start/Stop" Height="30" Width="120" Foreground="#0098c5" FontSize="12" Margin="5,0,0,0" HorizontalAlignment="Left" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Center">
+                                    <TextBox Grid.Column="1" Name="tbQueue" Height="30" Width="100" Background="#0098c5" Margin="0,0,5,0" IsEnabled="False" Foreground="Black" FontSize="12" Text="Queue : 20000" HorizontalContentAlignment="Center" />
+                                    <TextBox Grid.Column="1" Name="tbSuccess" Height="30" Width="100" Background="#0098c5" Margin="0,0,5,0" IsEnabled="False" Foreground="Black" FontSize="12" Text="Success : 20000" HorizontalContentAlignment="Center" />
+                                    <TextBox Grid.Column="1" Name="tbFailed" Height="30" Width="100" Background="#0098c5" Margin="0,0,5,0" IsEnabled="False" Foreground="Black" FontSize="12" Text="Failed : 20000" HorizontalContentAlignment="Center" />
+                                    <TextBox Grid.Column="1" Name="tbThreads" Height="30" Width="100" Background="#0098c5" Margin="0,0,5,0" IsEnabled="False" Foreground="Black" FontSize="12" Text="Thread(s) : 90" HorizontalContentAlignment="Center" />
+                                    <TextBox Grid.Column="1" Name="tbSave" Height="30" Width="100" Background="#0098c5" Margin="0,0,5,0" IsEnabled="False" Foreground="Black" FontSize="12" Text="StD : 90" HorizontalContentAlignment="Center" />
+                                </StackPanel>
+                            </Grid>
+                        </DockPanel>
+                    </Grid>
+                </DockPanel>
+                <DockPanel Grid.Row="1" Name="dpSettings" Visibility="Hidden">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Name="sp_ConfigureButtons">
+                            <Button Name="btnArticleOptions" Content="Article Options" Height="30" Width="120" Margin="5,0,5,0" FontSize="12" Foreground="#0098c5" FontWeight="Bold" Click="btnConfigureSettings_Click" />
+                            <Button Name="btnMediaOptions" Content="Media Options" Height="30" Width="120" FontSize="12" Margin="5,0,5,0" Click="btnConfigureSettings_Click" />
+                            <Button Name="btnAdvancedOptions" Content="Advanced Options" Height="30" Width="120" FontSize="12" Margin="5,0,5,0" Click="btnConfigureSettings_Click" />
+                        </StackPanel>
+                        <DockPanel Name="dpArticleScrapingOptions" Grid.Row="1" Visibility="Visible">
+                            <GroupBox Header="Article Scraping Options" Margin="5,0,5,5" FontSize="12" Padding="0">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+                                    <StackPanel>
+                                        <DockPanel VerticalAlignment="Top" Margin="0,0,5,5" HorizontalAlignment="Left">
+                                            <CheckBox Name="cbMinWords" Width="300" Content="Article minimum words threshold?" Margin="0,0,5,0" FontSize="12" />
+                                            <TextBox Width="150" HorizontalAlignment="Right" Name="tbMinWords" />
+                                        </DockPanel>
+                                        <DockPanel VerticalAlignment="Top" Margin="0,0,5,5" HorizontalAlignment="Left">
+                                            <CheckBox Name="cbMaxWords" Width="300" Content="Article maximum words threshold?" Margin="0,0,5,0" FontSize="12" />
+                                            <TextBox Width="150" HorizontalAlignment="Right" Name="tbMaxWords" />
+                                        </DockPanel>
+                                        <DockPanel VerticalAlignment="Top" Margin="0,0,5,5" HorizontalAlignment="Left">
+                                            <CheckBox Name="cbMaxThreads" Width="300" Content="Article maximum working threads threshold?" Margin="0,0,5,0" FontSize="12" />
+                                            <TextBox Width="150" HorizontalAlignment="Right" Name="tbMaxThreads" />
+                                        </DockPanel>
+                                        <DockPanel VerticalAlignment="Top" Margin="0,0,5,5" HorizontalAlignment="Left">
+                                            <CheckBox Name="cbMaxDepth" Width="300" Content="Maximum searching depth?" Margin="0,0,5,0" FontSize="12" />
+                                            <TextBox Width="150" HorizontalAlignment="Right" Name="tbMaxDepth" />
+                                        </DockPanel>
+                                        <DockPanel VerticalAlignment="Top" Margin="0,0,5,5" HorizontalAlignment="Left">
+                                            <CheckBox Name="cbRemoveBlankLines" Width="300" Content="Remove blank lines?" Margin="0,0,5,0" FontSize="12" />
+                                        </DockPanel>
+                                        <DockPanel VerticalAlignment="Top" Margin="0,0,5,5" HorizontalAlignment="Left">
+                                            <CheckBox Name="cbFileNameAsTitle" Width="300" Content="Using title as filename?" Margin="0,0,5,0" FontSize="12" />
+                                        </DockPanel>
+                                        <DockPanel VerticalAlignment="Top" Margin="0,0,5,5" HorizontalAlignment="Left">
+                                            <Label Content="Coping Options" Width="280" Margin="30,0,0,0" FontSize="12"></Label>
+                                            <ComboBox Width="150" HorizontalAlignment="Right" SelectedIndex="0" Name="cbCopyingOpts" FontSize="12">
+                                                <ComboBoxItem Content="Individual Files" Tag="IndividualFiles" FontSize="12" />
+                                                <ComboBoxItem Content="Single File" Tag="SingleFile" FontSize="12" />
+                                            </ComboBox>
+                                        </DockPanel>
+                                        <DockPanel VerticalAlignment="Top" Margin="0,0,5,5" HorizontalAlignment="Left">
+                                            <Label Content="Saving Options" Width="280" Margin="30,0,0,0" FontSize="12"></Label>
+                                            <ComboBox Width="150" HorizontalAlignment="Right" SelectedIndex="0" Name="cbSavingOpts" FontSize="12">
+                                                <ComboBoxItem Content="Only titles" Tag="OnlyTitles" FontSize="12" />
+                                                <ComboBoxItem Content="Only articles" Tag="OnlyArticles" FontSize="12" />
+                                                <ComboBoxItem Content="Articles &amp; Titles" Tag="ArticlesAndTitles" FontSize="12" />
+                                            </ComboBox>
+                                        </DockPanel>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </GroupBox>
+                        </DockPanel>
+                        <DockPanel Name="dpArticleMediaOptions" Grid.Row="1" Visibility="Hidden">
+                            <GroupBox Header="Article Media Options" Margin="5,0,5,5" FontSize="12" Padding="0">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+                                    <StackPanel>
+                                        <DockPanel VerticalAlignment="Top" Margin="0,0,5,5" HorizontalAlignment="Left">
+                                            <CheckBox Name="cbPreserveArticleImages" Width="300" Content="Preserve article images?" Margin="0,0,5,0" FontSize="12" />
+                                        </DockPanel>
+                                        <DockPanel VerticalAlignment="Top" Margin="0,0,5,5" HorizontalAlignment="Left">
+                                            <CheckBox Name="cbPreserveArticleVideos" Width="300" Content="Preserve article videos?" Margin="0,0,5,0" FontSize="12" />
+                                        </DockPanel>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </GroupBox>
+                        </DockPanel>
+                        <DockPanel Name="dpArticleAdvancedOptions" Grid.Row="1" Visibility="Hidden">
+                            <GroupBox Header="Article Advanced Options" Margin="5,0,5,5" FontSize="12" Padding="0">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+                                    <StackPanel>
+                                        <DockPanel VerticalAlignment="Top" Margin="0,0,5,5" HorizontalAlignment="Left">
+                                            <CheckBox Name="cbFilterArticle" Width="300" Content="Remove all black words?" Margin="0,0,5,0" FontSize="12" />
+                                        </DockPanel>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </GroupBox>
+                        </DockPanel>
+                    </Grid>
+                </DockPanel>
+            </Grid>
+        </DockPanel>
+        <DockPanel Grid.Row="2" LastChildFill="False" Background="#0098c5">
+            <Label DockPanel.Dock="Left" Content="version 1.0.0.0" Foreground="Black" FontSize="13" FontWeight="Bold" VerticalAlignment="Center" Name="lblVersion"/>
+            <TextBox DockPanel.Dock="Right" Width="90" Height="20" Margin="0,3,5,0" Name="tbRamConsumption" FontSize="13" />
+            <Label DockPanel.Dock="Right" Content="RAM: " Foreground="Black" FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
+            <TextBox DockPanel.Dock="Right" Width="60" Height="20" Margin="0,3,5,0" Name="tbCPUConsumption" FontSize="13" />
+            <Label DockPanel.Dock="Right" Content="CPU: " Foreground="Black" FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
+        </DockPanel>
     </Grid>
 </Window>
